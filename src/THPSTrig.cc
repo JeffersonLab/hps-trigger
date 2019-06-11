@@ -15,6 +15,9 @@
 
 using namespace std;
 
+const int THPSTrig::f_Top_rocID = 11;
+const int THPSTrig::f_Bot_rocID = 12;
+
 map<int, string> THPSTrig::vtp_sect = {
     {f_Top_rocID, "Top"},
     {f_Bot_rocID, "Bot"}
@@ -37,7 +40,9 @@ void THPSTrig::SetevioDOMENodeSect(evio::evioDOMNode* it, int a_rocID_tag) {
 
     // ===== Make sure correct rocID is provided
     if (!(a_rocID_tag == f_Top_rocID || a_rocID_tag == f_Bot_rocID)) {
-        printf("Wrong Bank Tag is provided %s Exiting \n", __func__);
+        printf("Wrong Bank Tag is provided in %s Exiting \n", __func__);
+        cout << "rocID is " << a_rocID_tag << endl;
+        exit(1);
     }
 
     fROC_ID = a_rocID_tag;
@@ -88,8 +93,18 @@ void THPSTrig::ReadHPSCL() {
     THPS_Cluster cur_cl;
 
     cur_cl.E = fit_data->range(22, 10);
-    cur_cl.Y = fit_data->range(9, 6);
-    cur_cl.X = fit_data->range(5, 0);
+    // === These are signed number, therefore using ap_int for easier conversion
+    ap_int<4> tmp_cly = fit_data->range(9, 6);
+
+    cur_cl.Y = tmp_cly.to_int();
+    ap_int<6> tmp_clx = fit_data->range(5, 0);
+    cur_cl.X = tmp_clx.to_int();
+
+    // ==== The vtp reports cl_x from -22 to 23, to make it consistent with 
+    // ==== other definitions, we subtract 1, when x<= 0
+    if (cur_cl.X <= 0) {
+        cur_cl.X = cur_cl.X - 1;
+    }
 
     // ===== Goint to the next word =====
     fit_data = std::next(fit_data, 1);
@@ -109,26 +124,25 @@ void THPSTrig::ReadHPSCL() {
     }
 }
 
-THPS_Cluster * THPSTrig::GetCLuster(int ind){
+THPS_Cluster * THPSTrig::GetCLuster(int ind) {
 
-    if( ind >= fn_HPS_Cl || ind < 0){
-        cout<<"Requested wrong cluster index="<<ind<<endl;
-        cout<<"# of clusters is "<<fn_HPS_Cl<<"    So he index should be between 0  and"<<(fn_HPS_Cl - 1)<<endl;
+    if (ind >= fn_HPS_Cl || ind < 0) {
+        cout << "Requested wrong cluster index=" << ind << endl;
+        cout << "# of clusters is " << fn_HPS_Cl << "    So he index should be between 0  and" << (fn_HPS_Cl - 1) << endl;
     }
-    
+
     return &fv_HPSCL.at(ind);
 }
 
-THPS_Cluster * THPSTrig::GetTopCLuster(int ind){
+THPS_Cluster * THPSTrig::GetTopCLuster(int ind) {
 
-    if( ind >= fn_HPS_Top_Cl || ind < 0){
-        cout<<"Requested wrong cluster index="<<ind<<endl;
-        cout<<"# of Top clusters is "<<fn_HPS_Top_Cl<<"    So he index should be between 0  and"<<(fn_HPS_Top_Cl - 1)<<endl;
+    if (ind >= fn_HPS_Top_Cl || ind < 0) {
+        cout << "Requested wrong cluster index=" << ind << endl;
+        cout << "# of Top clusters is " << fn_HPS_Top_Cl << "    So he index should be between 0  and" << (fn_HPS_Top_Cl - 1) << endl;
     }
-    
+
     return &fv_HPSCL.at(fv_ind_HPS_TopCL.at(ind));
 }
-
 
 THPSTrig::~THPSTrig() {
 }

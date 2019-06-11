@@ -61,8 +61,8 @@ private:
     int fn_HPS_Top_Cl;      // # of top clusters
     int fn_HPS_Bot_Cl;      // # of bot clusters
        
-    static const int f_Top_rocID = 60011;
-    static const int f_Bot_rocID = 60011;
+    static const int f_Top_rocID; // = 60011;
+    static const int f_Bot_rocID; // = 60012;
 
     // ================= The 1st four bits are occupied and the rest of trigger objects will be defined using 
     // ================= next four bits =========================================

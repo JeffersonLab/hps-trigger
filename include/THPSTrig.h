@@ -24,6 +24,21 @@ typedef struct {
     int T;
 } THPS_Cluster;
 
+typedef struct{
+    int instance; // The instance
+    bool top_bot; // Top or bottom
+    bool H_L1L2X_GEOM_PASS;  // 
+    bool H_L1L2_GEOM_PASS;   // Coincidence between Hodo L1 and L2
+    bool H_L2_PASS;  // Hodo L2 pass
+    bool H_L1_PASS;  // Hodo L1 pass
+    bool PDE_PASS;   // Position dependent Energy cut
+    bool MINX_PASS;  // if the cluster X is above the min-X
+    bool NMIN_PASS;  // # of hits in the cluster
+    bool EMAX_PASS;  // The cluster energy should be below of the EMAX
+    bool EMIN_PASS;  // The cluster energy should be above of the EMAX
+    int  T;          // Time of the trigger decision
+}THPS_Singles_Trg;
+
 class THPSTrig {
 public:
     THPSTrig();
@@ -37,10 +52,17 @@ public:
     int GetNTopClust() {return fn_HPS_Top_Cl;}; // Returns number of Top clusters
     int GetNBotClust() {return fn_HPS_Bot_Cl;}; // Returns number of Top clusters
     
+    int GetNSingleTrg() {return fn_HPS_SingleTrg;}; // Return # of single Trg objects
+    int GetNTopSingleTrg() {return fn_HPS_Top_SingleTrg;}; // Return # of Top single Trg objects
+    int GetNBotSingleTrg() {return fn_HPS_Bot_SingleTrg;}; // Return # of Bot single Trg objects
+        
     THPS_Cluster *GetCLuster(int i);              // Get i-th cluster
     THPS_Cluster *GetTopCLuster(int i);           // Get i-th Top cluster
     THPS_Cluster *GetBotCLuster(int i);           // Get i-th Bot cluster
 
+    THPS_Singles_Trg *GetSingleTrg(int i);        // Returns i-th SingleTrg
+    THPS_Singles_Trg *GetTopSingleTrg(int i);        // Returns i-th Top SingleTrg
+    THPS_Singles_Trg *GetBotSingleTrg(int i);        // Returns i-th Top SingleTrg
 
 private:
 
@@ -48,8 +70,12 @@ private:
     vector<int> fv_ind_HPS_TopCL; // Index of Top HPSClusters
     vector<int> fv_ind_HPS_BotCL; // Index of Bot HPSClusters
 
-
+    vector<THPS_Singles_Trg> fv_HPS_SingleTrg;    // Vector of singleTrigger
+    vector<int> fv_ind_HPS_Top_SingleTrg;         // vector of indexes of Top singles Triggers
+    vector<int> fv_ind_HPS_Bot_SingleTrg;         // Vector of indexes of Bot singles Triggers
+    
     bool has_HPSCl;
+    bool has_Singles;
 
     std::vector<ap_int<32> >::iterator fit_data;
     evio::evioDOMNode* fhead_node; //pointer to the head node of VTP bank
@@ -60,18 +86,24 @@ private:
     int fn_HPS_Cl;          // # of all clusters
     int fn_HPS_Top_Cl;      // # of top clusters
     int fn_HPS_Bot_Cl;      // # of bot clusters
+    
+    int fn_HPS_SingleTrg;       // # of Single triggers
+    int fn_HPS_Top_SingleTrg;   // # of Single Top triggers
+    int fn_HPS_Bot_SingleTrg;   // # of Single Bot triggers
        
     static const int f_Top_rocID; // = 60011;
     static const int f_Bot_rocID; // = 60012;
 
-    // ================= The 1st four bits are occupied and the rest of trigger objects will be defined using 
+    // ================= The 1st four bits are occupied and the rest of trigger objects will be defined using
     // ================= next four bits =========================================
     static const unsigned short int type_switch2ndlvl = 12;
     static const unsigned short int type_2ndlvl_HPSCL = 02; // HPS cluster type 
+    static const unsigned short int type_2ndlvl_HPSSIngleTrg = 03; // HPS SIngles Cluster
 
     void ResetAll();
     
     void ReadHPSCL(); // This method will read HPSClusters
+    void ReadHPSSingleTrg(); // This method will read the HPSSingle_Trig (The definition in clonbanks.xml)
     void Check2ndlvltype();
 
 };

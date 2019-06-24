@@ -11,14 +11,17 @@ HLS_FLAGS 	= -I/Work/apps/Vivado_HLS/2015.4/include
 libHPSTRG	= libHPSTrg
 
 
-all:		HPSTrg.o
+all:		HPSTrg.o HPSTrgVect.o
 		rm -f ${libHPSTRG}.so*
 		$(CC) $(CC_Shared_FLAGS) -o lib/${libHPSTRG}.so.1.0.1 $?
 		cd lib;\
 		ln -sf ${libHPSTRG}.so.1.0.1 ${libHPSTRG}.so.1; ln -sf ${libHPSTRG}.so.1.0.1 ${libHPSTRG}.so
 	
 HPSTrg.o:	src/THPSTrig.cc include/THPSTrig.h
-		$(CC) $(CC_OBJ_FLAGS) src/THPSTrig.cc -o $@ $(ROOT_CFLAGS) $(EVIO_FLAGS) $(HLS_FLAGS) -I./include	
+		$(CC) $(CC_OBJ_FLAGS) src/THPSTrig.cc -o $@ $(ROOT_CFLAGS) $(CODA_FLAGS) $(HLS_FLAGS) -I./include
+	
+HPSTrgVect.o:	src/THPSTrigVect.cc include/THPSTrigVect.h
+		$(CC) $(CC_OBJ_FLAGS) src/THPSTrigVect.cc -o $@ $(ROOT_CFLAGS) $(HLS_FLAGS) -I./include
 	
 clean:
 		rm -f lib/*.so.* lib/*.so *.o

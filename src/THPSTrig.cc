@@ -73,6 +73,8 @@ void THPSTrig::SetevioDOMENodeSect(evio::evioDOMNode* it, int a_rocID_tag) {
         fn_HPS_SingleTrg = fv_HPS_SingleTrg.size();
         fn_HPS_Top_SingleTrg = fv_ind_HPS_Top_SingleTrg.size();
         fn_HPS_Bot_SingleTrg = fv_ind_HPS_Bot_SingleTrg.size();
+        
+        fn_HPS_PairTrg = fv_HPS_PairTrg.size();
     }
 
 
@@ -156,6 +158,22 @@ void THPSTrig::ReadHPSSingleTrg() {
     }
 }
 
+void THPSTrig::ReadHPSPairTrg() {
+    has_pair = true;
+
+    THPS_PairTrig cur_trg;
+
+    cur_trg.instance = fit_data->range(22, 20);
+    cur_trg.reserved = fit_data->range(19, 14);
+    cur_trg.coplan_pass = fit_data->range(13, 13);
+    cur_trg.Edslope_pass = fit_data->range(12, 12);
+    cur_trg.Ediff_pass = fit_data->range(11, 11);
+    cur_trg.summ_pass = fit_data->range(10, 10);
+    cur_trg.T = fit_data->range(9, 0);
+
+    fv_HPS_PairTrg.push_back(cur_trg);
+}
+
 THPS_Cluster * THPSTrig::GetCLuster(int ind) {
 
     if (ind >= fn_HPS_Cl || ind < 0) {
@@ -200,7 +218,7 @@ THPS_Singles_Trg *THPSTrig::GetTopSingleTrg(int ind) {
         cout << "Requested wrong Top SingleTrg index=" << ind << endl;
         cout << "# of Top SingleTrg objects is " << fn_HPS_Top_SingleTrg << "    So he index should be between 0  and" << (fn_HPS_Top_SingleTrg - 1) << endl;
     }
-            
+
     return &fv_HPS_SingleTrg.at(fv_ind_HPS_Top_SingleTrg.at(ind));
 }
 
@@ -209,11 +227,18 @@ THPS_Singles_Trg *THPSTrig::GetBotSingleTrg(int ind) {
         cout << "Requested wrong Bot SingleTrg index=" << ind << endl;
         cout << "# of Bot SingleTrg objects is " << fn_HPS_Bot_SingleTrg << "    So he index should be between 0  and" << (fn_HPS_Bot_SingleTrg - 1) << endl;
     }
-            
+
     return &fv_HPS_SingleTrg.at(fv_ind_HPS_Bot_SingleTrg.at(ind));
 }
 
-
+THPS_PairTrig* THPSTrig::GetPairTrg(int ind) {
+       if (ind >= fn_HPS_PairTrg || ind < 0) {
+        cout << "Requested wrong Bot PairTrg index=" << ind << endl;
+        cout << "# of PairTrig is " << fn_HPS_PairTrg << "    So he index should be between 0  and" << (fn_HPS_PairTrg - 1) << endl;
+    }
+ 
+       
+}
 
 
 THPSTrig::~THPSTrig() {
@@ -242,6 +267,9 @@ void THPSTrig::ResetAll() {
     fv_ind_HPS_Bot_SingleTrg.clear();
     fv_ind_HPS_Bot_SingleTrg.shrink_to_fit();
 
+    fv_HPS_PairTrg.clear();
+    fv_HPS_PairTrg.shrink_to_fit();
+
     fn_HPS_Cl = 0;
     fn_HPS_Top_Cl = 0;
     fn_HPS_Bot_Cl = 0;
@@ -250,5 +278,5 @@ void THPSTrig::ResetAll() {
     fn_HPS_Top_SingleTrg = 0;
     fn_HPS_Bot_SingleTrg = 0;
 
-
+    fn_HPS_PairTrg = 0;
 }

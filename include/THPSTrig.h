@@ -39,6 +39,17 @@ typedef struct{
     int  T;          // Time of the trigger decision
 }THPS_Singles_Trg;
 
+
+typedef struct{
+    int instance;           // The instance
+    int reserved;           // has no meaning yet
+    bool coplan_pass;       // passed the coplanarity cut
+    bool Edslope_pass;      // passed the energy distance slope
+    bool Ediff_pass;        // passed the enegy difference cut
+    bool summ_pass;         // passed the Energy sum cut
+    int T;                  // TIme of the trigger decision
+}THPS_PairTrig;
+
 class THPSTrig {
 public:
     THPSTrig();
@@ -56,6 +67,8 @@ public:
     int GetNTopSingleTrg() {return fn_HPS_Top_SingleTrg;}; // Return # of Top single Trg objects
     int GetNBotSingleTrg() {return fn_HPS_Bot_SingleTrg;}; // Return # of Bot single Trg objects
         
+    int GetNPairTrg() {return fn_HPS_PairTrg;}; // Return # of Pair Trg objects
+    
     THPS_Cluster *GetCLuster(int i);              // Get i-th cluster
     THPS_Cluster *GetTopCLuster(int i);           // Get i-th Top cluster
     THPS_Cluster *GetBotCLuster(int i);           // Get i-th Bot cluster
@@ -63,6 +76,8 @@ public:
     THPS_Singles_Trg *GetSingleTrg(int i);        // Returns i-th SingleTrg
     THPS_Singles_Trg *GetTopSingleTrg(int i);        // Returns i-th Top SingleTrg
     THPS_Singles_Trg *GetBotSingleTrg(int i);        // Returns i-th Top SingleTrg
+
+    THPS_PairTrig *GetPairTrg(int i);        // Returns i-th Pair trigger
 
 private:
 
@@ -73,9 +88,12 @@ private:
     vector<THPS_Singles_Trg> fv_HPS_SingleTrg;    // Vector of singleTrigger
     vector<int> fv_ind_HPS_Top_SingleTrg;         // vector of indexes of Top singles Triggers
     vector<int> fv_ind_HPS_Bot_SingleTrg;         // Vector of indexes of Bot singles Triggers
+
+    vector<THPS_PairTrig> fv_HPS_PairTrg;         // Vector of PairTrigger
     
     bool has_HPSCl;
     bool has_Singles;
+    bool has_pair;
 
     std::vector<ap_int<32> >::iterator fit_data;
     evio::evioDOMNode* fhead_node; //pointer to the head node of VTP bank
@@ -90,20 +108,24 @@ private:
     int fn_HPS_SingleTrg;       // # of Single triggers
     int fn_HPS_Top_SingleTrg;   // # of Single Top triggers
     int fn_HPS_Bot_SingleTrg;   // # of Single Bot triggers
+
+    int fn_HPS_PairTrg;       // # of Pair triggers
        
-    static const int f_Top_rocID; // = 60011;
-    static const int f_Bot_rocID; // = 60012;
+    static const int f_Top_rocID; // = 11;
+    static const int f_Bot_rocID; // = 12;
 
     // ================= The 1st four bits are occupied and the rest of trigger objects will be defined using
     // ================= next four bits =========================================
     static const unsigned short int type_switch2ndlvl = 12;
-    static const unsigned short int type_2ndlvl_HPSCL = 02; // HPS cluster type 
-    static const unsigned short int type_2ndlvl_HPSSIngleTrg = 03; // HPS SIngles Cluster
+    static const unsigned short int type_2ndlvl_HPSCL = 02;             // HPS cluster type 
+    static const unsigned short int type_2ndlvl_HPSSIngleTrg = 03;      // HPS SIngles Cluster
+    static const unsigned short int type_2ndlvl_HPSPairTrg = 04;        // HPS SIngles Cluster
 
     void ResetAll();
     
     void ReadHPSCL(); // This method will read HPSClusters
     void ReadHPSSingleTrg(); // This method will read the HPSSingle_Trig (The definition in clonbanks.xml)
+    void ReadHPSPairTrg(); // This method will read the HPSSingle_Trig (The definition in clonbanks.xml)
     void Check2ndlvltype();
 
 };
